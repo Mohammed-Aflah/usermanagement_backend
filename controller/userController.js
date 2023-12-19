@@ -38,6 +38,7 @@ async function SignupPost(req, res) {
       { expiresIn: "24h" }
     );
     res.cookie("token", token, { httpOnly: true });
+    res.clearCookie("jwtadmin")
     // res.cookie("token", token, { httpOnly: true, path: '/' });
     console.log(token);
     res.json({ status: true, userDetails: newUser });
@@ -63,6 +64,7 @@ async function LoginPost(req, res) {
       { expiresIn: "24h" }
     );
     res.cookie("token", token, { httpOnly: true });
+    res.clearCookie("jwtadmin")
     res.json({
       status: true,
       message: "Login Successfull!!",
@@ -128,13 +130,23 @@ async function updateUserProfile(req,res){
           profile = `${process.env.BASE_URL}/profileimages/${req.file.filename}`;
         }
         console.log(profile);
-        await User.updateOne({_id:id},{
-            $set:{
-                username:username,
-                email:email,
-                profileImage:profile
-            }
-        })
+        if(profile){
+            await User.updateOne({_id:id},{
+                $set:{
+                    username:username,
+                    email:email,
+                    profileImage:profile
+                }
+            })
+        }else{
+            await User.updateOne({_id:id},{
+                $set:{
+                    username:username,
+                    email:email,
+                }
+            })
+
+        }
         const userData=await User.findOne({_id:id})
         res.json({status:true,userData})
     }catch(err){
