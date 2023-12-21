@@ -128,6 +128,7 @@ module.exports = {
     try{
         console.log('admin check api called');
         const adminToken=req.cookies.jwtadmin
+        // console.log(adminToken,' __admin token__');
         if(!adminToken){
             throw new Error('Session Expired please login')
         }
